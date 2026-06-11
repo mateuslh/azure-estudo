@@ -1,0 +1,9 @@
+[submodule "adp-azure-estudo"]
+	path = adp-azure-estudo
+	url = git@github.com:mateuslh/adp-azure-estudo.git
+[submodule "faa-azure-estudo"]
+	path = faa-azure-estudo
+	url = git@github.com:mateuslh/faa-azure-estudo.git
+[submodule "swa-azure-estudo"]
+	path = swa-azure-estudo
+	url = git@github.com:mateuslh/swa-azure-estudo.git
