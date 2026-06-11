@@ -1,53 +1,40 @@
 # azure-estudo
 
-Hub dos projetos de estudo Microsoft Azure. Cada submodule é um repositório independente com infraestrutura, código e pipeline próprios.
+Hub dos projetos de estudo **Microsoft Azure**. Três repositórios independentes (Git submodules) que juntos formam uma aplicação fullstack na Azure — banco de dados, API e frontend — cada um com infraestrutura (Terraform) e pipeline (GitHub Actions) próprios.
+
+> 📐 Documentação completa de arquitetura, cloud, DevOps e processo de deploy: **[ARQUITETURA.md](ARQUITETURA.md)**
 
 ## Projetos
 
 | Repo | O que é | Stack |
 |---|---|---|
-| [adp-azure-estudo](https://github.com/mateuslh/adp-azure-estudo) | Banco de dados PostgreSQL | Terraform, Azure PostgreSQL Flexible Server |
-| [faa-azure-estudo](https://github.com/mateuslh/faa-azure-estudo) | API REST de Pessoas | Python, FastAPI, Azure Container App |
-| [swa-azure-estudo](https://github.com/mateuslh/swa-azure-estudo) | Frontend estático sobre Azure | React, Vite, Azure Static Web App |
+| [adp-azure-estudo](https://github.com/mateuslh/adp-azure-estudo) | Banco de dados | Terraform, Azure PostgreSQL Flexible Server |
+| [faa-azure-estudo](https://github.com/mateuslh/faa-azure-estudo) | API REST de Pessoas | Python, FastAPI, Docker, Azure Container Apps |
+| [swa-azure-estudo](https://github.com/mateuslh/swa-azure-estudo) | Site técnico sobre Azure | React, Vite, Azure Static Web Apps |
 
-## Arquitetura
+## Arquitetura (resumo)
 
 ```
-                    ┌─────────────────────────────┐
-                    │  swa-azure-estudo            │
-                    │  React + Azure Static Web App│
-                    └─────────────────────────────┘
+React (Static Web App) ──► FastAPI (Container App) ──► PostgreSQL (Flexible Server)
 
-                    ┌─────────────────────────────┐
-                    │  faa-azure-estudo            │
-                    │  FastAPI + Container App     │
-                    │  GET /pessoas                │
-                    │  POST /pessoas               │
-                    └──────────────┬──────────────┘
-                                   │
-                    ┌──────────────▼──────────────┐
-                    │  adp-azure-estudo            │
-                    │  PostgreSQL Flexible Server  │
-                    │  tabela: pessoas             │
-                    └─────────────────────────────┘
-
-           Tudo dentro de: rg-azure-estudo (brazilsouth)
-           State Terraform: stterraformadpstate / tfstate
+Resource Group: rg-azure-estudo (brazilsouth)
+IaC: Terraform com state no Azure Blob Storage
+CI/CD: GitHub Actions — push na main = deploy automático
 ```
 
-## Clonando tudo de uma vez
+## Como clonar
 
 ```sh
 git clone --recurse-submodules git@github.com:mateuslh/azure-estudo.git
 ```
 
-Ou se já clonou sem submodules:
+Se já clonou sem submodules:
 
 ```sh
 git submodule update --init --recursive
 ```
 
-## Atualizando os submodules
+Para atualizar os submodules:
 
 ```sh
 git submodule update --remote --merge
