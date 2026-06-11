@@ -47,7 +47,7 @@ git clone --recurse-submodules git@github.com:mateuslh/azure-estudo.git
                                         │ tabela: pessoas          │
                                         └──────────────────────────┘
 
-  Resource Group: rg-azure-estudo (brazilsouth)
+  Resource Groups: rg-azure-estudo (banco + API) e rg-swa-azure-estudo (frontend), ambos em brazilsouth
   Observabilidade: Log Analytics Workspace (log-faa-func)
   State Terraform: Azure Blob Storage (stterraformadpstate / tfstate)
 ```
@@ -56,7 +56,8 @@ git clone --recurse-submodules git@github.com:mateuslh/azure-estudo.git
 
 | Recurso | Nome | SKU / Tier | Justificativa |
 |---|---|---|---|
-| Resource Group | `rg-azure-estudo` | — | Container lógico compartilhado, em `brazilsouth` |
+| Resource Group | `rg-azure-estudo` | — | Container lógico compartilhado por banco e API, em `brazilsouth` |
+| Resource Group | `rg-swa-azure-estudo` | — | RG próprio do frontend, gerenciado pelo Terraform do swa |
 | PostgreSQL Flexible Server | `psql-adp-test-<sufixo>` | `B_Standard_B1ms` (1 vCore, 2 GB, 32 GB disco) | Menor e mais barato; Flexible Server é o tier recomendado (Single Server descontinuado) |
 | Container Registry | `acrfaaazure<sufixo>` | Basic, admin enabled | Armazena a imagem Docker da API |
 | Log Analytics Workspace | `log-faa-func` | PerGB2018, retenção 30 dias | Logs do Container App Environment |
@@ -66,7 +67,7 @@ git clone --recurse-submodules git@github.com:mateuslh/azure-estudo.git
 
 ### Decisões de arquitetura
 
-- **Resource Group compartilhado:** `rg-azure-estudo` é pré-existente e apenas *referenciado* (`data` source) pelos Terraforms do banco e da API — nenhum repo é dono dele, evitando que um `destroy` derrube tudo.
+- **Resource Group compartilhado:** `rg-azure-estudo` é pré-existente e apenas *referenciado* (`data` source) pelos Terraforms do banco e da API — nenhum repo é dono dele, evitando que um `destroy` derrube tudo. Já o frontend cria e gerencia seu próprio RG (`rg-swa-azure-estudo`), pois não compartilha recursos com os demais.
 - **Sufixos aleatórios** (`random_string`) nos nomes do servidor PostgreSQL e do ACR, porque ambos exigem nomes globalmente únicos na Azure.
 - **Firewall do PostgreSQL** com regra `0.0.0.0–0.0.0.0`, que na Azure significa "somente serviços Azure" (Container App e runners de pipeline), não internet aberta.
 - **Segredos como `secret` do Container App** (`db-password`, `acr-password`) injetados como env vars — nunca em texto plano no template.
